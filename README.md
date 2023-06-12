@@ -1,0 +1,2 @@
+# MyGoLearningProject
+Becoming stronger
