@@ -15,7 +15,7 @@ func InitMySQL() (err error) {
 	if err != nil {
 		return
 	}
-	// 测试与数据库的连接是否仍然存在
+	// 测试与数据库的连接是否仍然 存在
 	// DB()返回一个sql.DB类型的指针
 	// Ping()方法用于测试与数据库的连接是否仍然存在
 	return DB.DB().Ping()
