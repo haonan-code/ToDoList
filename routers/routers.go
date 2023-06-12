@@ -5,6 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+/*
+路由层：在路由层中，我们定义HTTP请求的URL路径和HTTP方法，并将其与处理该请求的控制器函数关联起来。
+*/
+
 func SetupRouter() *gin.Engine {
 	// 创建一个带有默认中间件的新的gin示例，包括Logger中间件和Recovery中间件
 	r := gin.Default()
