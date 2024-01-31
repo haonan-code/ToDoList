@@ -7,7 +7,7 @@ import (
 )
 
 /*
- url --> controller --> logic --> model
+ url --> controller  --> logic   --> model
 请求  --> 控制器      --> 业务逻辑 --> 模型层的增删改查
 */
 /*
@@ -33,7 +33,9 @@ func CreateTodo(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
+		// 直接返回结构体todo，返回的格式与定义的结构体格式一致
 		c.JSON(http.StatusOK, todo)
+		// 返回自定义构建的json结构体
 		//c.JSON(http.StatusOK, gin.H{
 		//	"code": 2000,
 		//	"msg":  "success",
