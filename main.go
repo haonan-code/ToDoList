@@ -18,7 +18,6 @@ func main() {
 	dao.InitMySQL()
 	// 注册路由
 	r := routers.SetupRouter()
-
 	r.Run(":9090")
 
 }
