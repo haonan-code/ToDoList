@@ -26,7 +26,7 @@ func CreateTodo(c *gin.Context) {
 	// 1. 从请求中把数据拿出来
 	var todo models.Todo
 	// BindJSON()用于从请求中获取JSON数据并将其绑定到指定的Go结构体变量&todo上
-	c.BindJSON(&todo)
+	c.ShouldBind(&todo)
 
 	// 2. 存入数据库
 	err := models.CreateATodo(&todo)
