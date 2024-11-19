@@ -26,21 +26,22 @@ func CreateTodo(c *gin.Context) {
 	// 1. 从请求中把数据拿出来
 	var todo models.Todo
 	// BindJSON()用于从请求中获取JSON数据并将其绑定到指定的Go结构体变量&todo上
-	c.ShouldBind(&todo)
-
+	if err := c.ShouldBind(&todo); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	// 2. 存入数据库
-	err := models.CreateATodo(&todo)
-	if err != nil {
+	if err := models.CreateATodo(&todo); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
 		// 直接返回结构体todo，返回的格式与定义的结构体格式一致
-		c.JSON(http.StatusOK, todo)
+		//c.JSON(http.StatusOK, todo)
 		// 返回自定义构建的json结构体
-		//c.JSON(http.StatusOK, gin.H{
-		//	"code": 2000,
-		//	"msg":  "success",
-		//	"data": todo,
-		//})
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"msg":    "success",
+			"data":   todo,
+		})
 	}
 }
 
@@ -50,7 +51,12 @@ func GetTodoList(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, todoList)
+		//c.JSON(http.StatusOK, todoList)
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"msg":    "success",
+			"data":   todoList,
+		})
 	}
 }
 
@@ -69,7 +75,12 @@ func UpdateATodo(c *gin.Context) {
 	if err = models.UpdateATodo(todo); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, todo)
+		//c.JSON(http.StatusOK, todo)
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"msg":    "success",
+			"data":   todo,
+		})
 	}
 }
 
@@ -82,6 +93,11 @@ func DeleteATodo(c *gin.Context) {
 	if err := models.DeleteATodo(id); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
-		c.JSON(http.StatusOK, gin.H{id: "deleted"})
+		//c.JSON(http.StatusOK, gin.H{id: "deleted"})
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"msg":    "success",
+			"data":   struct{ ID string }{ID: "deleted"},
+		})
 	}
 }
