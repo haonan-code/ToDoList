@@ -2,8 +2,15 @@ package main
 
 import (
 	"bubble/dao"
+	_ "bubble/docs"
 	"bubble/routers"
 )
+
+// @title 示例 API 文档
+// @version 1.0
+// @description 一个简单的 Swagger 示例
+// @host localhost:8080
+// @BasePath /api/v1
 
 func main() {
 	// 创建数据库

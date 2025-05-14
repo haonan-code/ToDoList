@@ -8,7 +8,7 @@ import (
 type Todo struct {
 	ID     int    `json:"id"`
 	Title  string `json:"title"`
-	status bool   `json:"status"`
+	Status int    `json:"status"`
 }
 
 /*
