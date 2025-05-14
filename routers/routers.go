@@ -2,7 +2,10 @@ package routers
 
 import (
 	"bubble/controller"
+
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 /*
@@ -18,10 +21,12 @@ func SetupRouter() *gin.Engine {
 	r.LoadHTMLGlob("templates/*")
 	// 为路由绑定处理函数
 	r.GET("/", controller.IndexHandler)
+	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// 创建路由分组v1
 	v1Group := r.Group("v1")
 	{
+		v1Group.GET("/ping", controller.Ping)
 		// 待办事项
 		// 添加
 		v1Group.POST("/todo", controller.CreateTodo)

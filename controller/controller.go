@@ -21,6 +21,19 @@ func IndexHandler(c *gin.Context) {
 
 }
 
+// Ping godoc
+// @Summary 测试接口
+// @Description 返回 pong
+// @Tags 示例
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /ping [get]
+func Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "pong",
+	})
+}
+
 func CreateTodo(c *gin.Context) {
 	// 前端页面填写待办事项 点击请求 会发请求到这里
 	// 1. 从请求中把数据拿出来
