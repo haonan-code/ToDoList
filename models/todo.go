@@ -11,6 +11,16 @@ type Todo struct {
 	Status int    `json:"status"`
 }
 
+type TodoResponse struct {
+	Status int    `json:"status"`
+	Msg    string `json:"msg"`
+	Data   Todo   `json:"data"`
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
 /*
 	Todo这个Model的增删改查操作都放在这里
 */

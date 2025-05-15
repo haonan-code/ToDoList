@@ -1,4 +1,28 @@
 basePath: /api/v1
+definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  models.Todo:
+    properties:
+      id:
+        type: integer
+      status:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.TodoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/models.Todo'
+      msg:
+        type: string
+      status:
+        type: integer
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -21,4 +45,101 @@ paths:
       summary: 测试接口
       tags:
       - 示例
+  /todo:
+    get:
+      description: 返回给前端所有的 Todo 项目
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回所有待办事项
+          schema:
+            $ref: '#/definitions/models.TodoResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: 查询所有待办事项
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: 接收前端传来的 JSON，创建一个 Todo 项目
+      parameters:
+      - description: 待办事项内容
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.Todo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功返回的结构体
+          schema:
+            $ref: '#/definitions/models.TodoResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: 创建待办事项
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据 ID 删除待办事项
+      parameters:
+      - description: 待办事项id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 删除成功返回的结构体
+          schema:
+            $ref: '#/definitions/models.TodoResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: 删除待办事项
+      tags:
+      - Todo
+    put:
+      consumes:
+      - application/json
+      description: 根据 ID 更新待办事项的内容
+      parameters:
+      - description: 待办事项id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 待办事项内容
+        in: body
+        name: todo
+        required: true
+        schema:
+          $ref: '#/definitions/models.Todo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 修改成功返回的结构体
+          schema:
+            $ref: '#/definitions/models.TodoResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: 修改待办事项
+      tags:
+      - Todo
 swagger: "2.0"
