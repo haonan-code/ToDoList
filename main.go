@@ -6,12 +6,12 @@ import (
 	"bubble/routers"
 )
 
-//	@title			示例 API 文档
+//	@title			待办事项 API 文档
 //	@version		1.0
-//	@description	一个简单的 Swagger 示例
-//	@host			localhost:8080
-//	@BasePath		/api/v1
-
+//	@description	这是详细介绍待办事项的 API 文档
+//
+//	@contact.name	huang
+//	@contact.email	nanguatou10@gmail
 func main() {
 	// 创建数据库
 	// sql: CREATE DATABASE bubble;

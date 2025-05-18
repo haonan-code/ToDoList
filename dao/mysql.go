@@ -11,7 +11,7 @@ var (
 )
 
 func InitMySQL() (err error) {
-	dsn := "root:123456@(localhost)/mydb?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:20000406@(localhost)/todolist_db?charset=utf8mb4&parseTime=True&loc=Local"
 	DB, err = gorm.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal("Failed to open database:", err)

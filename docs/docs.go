@@ -10,7 +10,10 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "huang",
+            "email": "nanguatou10@gmail"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -230,11 +233,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Host:             "",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "示例 API 文档",
-	Description:      "一个简单的 Swagger 示例",
+	Title:            "待办事项 API 文档",
+	Description:      "这是详细介绍待办事项的 API 文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
