@@ -11,7 +11,7 @@ import (
 // @description	这是详细介绍待办事项的 API 文档
 //
 // @contact.name	huang
-// @contact.email	nanguatou10@gmail
+// @contact.email	nanguatou10@gmail.com
 func main() {
 	// 初始化数据库
 	err := db.InitMySQL()

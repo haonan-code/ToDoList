@@ -39,89 +39,53 @@
 └─templates
 ```
 
+介绍：
+
+-   路由层【routers】：在路由层中，我们定义HTTP请求的URL路径和HTTP方法，并将其与处理该请求的控制器函数关联起来。
+-   控制器层【controller】：控制器层负责处理HTTP请求并进行业务逻辑处理。它通常会从请求中获取参数、调用服务层进行数据操作、对返回的结果进行封装后返回给客户端。
+-   模型层【models】：Model的增删改查操作都放在这里
+
 
 
 ## 二、具体流程
 
+>    url --> controller --> logic  --> model
+>   请求  --> 控制器      --> 业务逻辑 --> 模型层的增删改查
+
+
+
 项目从主目录下的`main.go`文件进入，主要代码如下：
 
 ```go
-package main
-
-import (
-	"bubble/db"
-	"bubble/routers"
-)
-
 func main() {
-	// 创建数据库
-	// sql: CREATE DATABASE bubble;
-	// 连接数据库 & 模型绑定
-	err := dao.InitMySQL()
+	// 初始化数据库
+	err := db.InitMySQL()
 	if err != nil {
 		panic(err)
 	}
-	defer dao.Close() // 程序退出关闭数据库连接
+	defer db.Close()
 	// 注册路由
 	r := routers.SetupRouter()
 	r.Run(":9090")
 }
-
 ```
 
 前提：数据库已创建
 
 main.go 文件中主要进行了下列操作：
 
-1. 初始化数据库连接
-2. 创建gin示例，注册路由
+1. 初始化数据库连接，设置程序退出前自动关闭连接
+2. 注册路由并将 gin 实例运行在 9090 端口
 
 ### 1. 初始化数据库连接
 
-在dao目录下的mysql.go文件中进行数据库的初始化连接操作，详情见具体代码：
-
-```go
-package dao
-
-import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	"log"
-)
-
-var (
-	DB *gorm.DB
-)
-
-func InitMySQL() (err error) {
-	dsn := "root:123456@(localhost)/mydb?charset=utf8mb4&parseTime=True&loc=Local"
-	DB, err = gorm.Open("mysql", dsn)
-	if err != nil {
-		log.Fatal("Failed to open database:", err)
-	}
-	// 测试与数据库的连接是否仍然 存在
-	// DB()返回一个sql.DB类型的指针
-	// Ping()方法用于测试与数据库的连接是否仍然存在
-	return DB.DB().Ping()
-}
-
-func Close() {
-	DB.Close()
-}
-```
-
-初始化语句接收error返回值，若初始化连接失败，则会报panic。然后使用defer语句，确保程序退出时会关闭数据库连接。
+在 db 目录下的 `init.go` 文件中进行数据库的初始化连接操作，采用 gototenv 模块读取项目根目录下的 settings.env 文件的数据库配置信息。
 
 ### 2. 注册路由
 
-<aside>
-💡
+路由层：定义 HTTP 请求的 URL 路径和 HTTP 方法，并将其与处理该请求的控制器函数关联起来。
 
-路由层：定义HTTP请求的URL路径和HTTP方法，并将其与处理该请求的控制器函数关联起来。
-
-</aside>
-
-调用routers下的routers.go文件进行路由的注册工作，主要进行了下列操作：
+调用 routers 下的 routers.go 文件进行路由的注册工作，主要进行了下列操作：
 
 - 创建带有默认中间件的新gin示例
 
@@ -133,10 +97,10 @@ func Close() {
 - 绑定模板文件以及其引用的静态文件路径
 
     ```go
-    	// 告诉gin框架模板文件引用的静态文件去哪里找
-    	r.Static("/static", "static")
-    	// 告诉gin框架去哪里找模板文件
-    	r.LoadHTMLGlob("templates/*")
+    // 告诉gin框架模板文件引用的静态文件去哪里找
+    r.Static("/static", "static")
+    // 告诉gin框架去哪里找模板文件
+    r.LoadHTMLGlob("templates/*")
     ```
 
 - 为路由绑定处理函数
@@ -173,47 +137,7 @@ func Close() {
     ```
 
 
-所有代码如下：
 
-```go
-package routers
-
-import (
-	"bubble/controller"
-	"github.com/gin-gonic/gin"
-)
-
-/*
-路由层：在路由层中，我们定义HTTP请求的URL路径和HTTP方法，并将其与处理该请求的控制器函数关联起来。
-*/
-
-func SetupRouter() *gin.Engine {
-	// 创建一个带有默认中间件的新的gin示例，包括Logger中间件和Recovery中间件
-	r := gin.Default()
-	// 告诉gin框架模板文件引用的静态文件去哪里找
-	r.Static("/static", "static")
-	// 告诉gin框架去哪里找模板文件
-	r.LoadHTMLGlob("templates/*")
-	// 为路由绑定处理函数
-	r.GET("/", controller.IndexHandler)
-
-	// 创建路由分组v1
-	v1Group := r.Group("v1")
-	{
-		// 待办事项
-		// 添加
-		v1Group.POST("/todo", controller.CreateTodo)
-		// 查看所有的待办事项
-		v1Group.GET("/todo", controller.GetTodoList)
-		// 修改某一个待办事项
-		v1Group.PUT("/todo/:id", controller.UpdateATodo)
-		// 删除某一个待办事项
-		v1Group.DELETE("/todo/:id", controller.DeleteATodo)
-	}
-	return r
-}
-
-```
 
 ### 3. 业务控制
 
@@ -330,7 +254,7 @@ url     —> controller —> logic        —> model
 
 ### 4. 数据库操作
 
-model层通过dao层声明的gorm指针对底层数据库进行操作
+model 层通过 db 层声明的 gorm 指针对底层数据库进行操作
 
 1. 增
 
@@ -380,7 +304,6 @@ model层通过dao层声明的gorm指针对底层数据库进行操作
     	return
     }
     ```
-
 
 
 

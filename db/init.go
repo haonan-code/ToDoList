@@ -14,7 +14,6 @@ var (
 
 func InitMySQL() (err error) {
 	cfg := config.GetDBConfig()
-	//dsn := "root:20000406@(localhost)/todolist_db?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.User, cfg.Password, cfg.Host, cfg.DBName)
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})

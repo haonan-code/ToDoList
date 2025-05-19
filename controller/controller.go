@@ -6,15 +6,6 @@ import (
 	"net/http"
 )
 
-/*
- url --> controller  --> logic   --> model
-请求  --> 控制器      --> 业务逻辑 --> 模型层的增删改查
-*/
-/*
-控制器层：控制器层负责处理HTTP请求并进行业务逻辑处理。它通常会从请求中获取参数、
-调用服务层进行数据操作、对返回的结果进行封装后返回给客户端。
-*/
-
 func IndexHandler(c *gin.Context) {
 
 	c.HTML(http.StatusOK, "index.html", nil)
@@ -22,6 +13,7 @@ func IndexHandler(c *gin.Context) {
 }
 
 // Ping godoc
+//
 //	@Summary		测试接口
 //	@Description	返回 pong
 //	@Tags			示例
@@ -35,6 +27,7 @@ func Ping(c *gin.Context) {
 }
 
 // CreateTodo 创建一个新的待办事项
+//
 //	@Summary		创建待办事项
 //	@Description	接收前端传来的 JSON，创建一个 Todo 项目
 //	@Tags			Todo
@@ -69,6 +62,7 @@ func CreateTodo(c *gin.Context) {
 }
 
 // GetTodoList 查询所有待办事项
+//
 //	@Summary		查询所有待办事项
 //	@Description	返回给前端所有的 Todo 项目
 //	@Tags			Todo
@@ -92,6 +86,7 @@ func GetTodoList(c *gin.Context) {
 }
 
 // UpdateATodo 修改一个待办事项
+//
 //	@Summary		修改待办事项
 //	@Description	根据 ID 更新待办事项的内容
 //	@Tags			Todo
@@ -127,6 +122,7 @@ func UpdateATodo(c *gin.Context) {
 }
 
 // DeleteATodo 删除一个待办事项
+//
 //	@Summary		删除待办事项
 //	@Description	根据 ID 删除待办事项
 //	@Tags			Todo
