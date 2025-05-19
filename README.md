@@ -15,8 +15,6 @@
 │  go.sum
 │  main.go
 │  README.md
-│  settings.env
-│  settings.env.example
 ├─config
 │      config.go
 ├─controller 			# 控制器，处理路由请求，调用model层对数据进行操作
