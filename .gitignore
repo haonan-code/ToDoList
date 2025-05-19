@@ -22,3 +22,5 @@
 go.work
 
 settings.env
+
+config/config.yaml

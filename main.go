@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bubble/config"
 	"bubble/db"
 	_ "bubble/docs"
 	"bubble/routers"
@@ -13,12 +14,10 @@ import (
 // @contact.name	huang
 // @contact.email	nanguatou10@gmail.com
 func main() {
+	// 读取配置信息
+	config.InitConfig()
 	// 初始化数据库
-	err := db.InitMySQL()
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
+	db.InitDatabase()
 	// 注册路由
 	r := routers.SetupRouter()
 	r.Run(":9090")
