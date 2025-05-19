@@ -1,31 +1,32 @@
 package config
 
 import (
-	"github.com/joho/godotenv"
-	"log"
-	"os"
+	"fmt"
+	"github.com/spf13/viper"
 )
 
-type DBConfig struct {
+type DatabaseConfig struct {
+	Host     string
+	Port     int
 	User     string
 	Password string
-	Host     string
-	DBName   string
+	Name     string
 }
 
-func LoadEnv() {
-	err := godotenv.Load("settings.env")
+var DBConfig DatabaseConfig
+
+func InitConfig() {
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config")
+
+	err := viper.ReadInConfig()
 	if err != nil {
-		log.Println("❗ 未找到 .env 文件，使用系统环境变量")
+		panic(fmt.Errorf("读取配置失败: %w", err))
 	}
-}
 
-func GetDBConfig() DBConfig {
-	LoadEnv()
-	return DBConfig{
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Host:     os.Getenv("DB_HOST"),
-		DBName:   os.Getenv("DB_NAME"),
+	err = viper.Sub("database").Unmarshal(&DBConfig)
+	if err != nil {
+		panic(fmt.Errorf("解析数据库配置失败: %w", err))
 	}
 }

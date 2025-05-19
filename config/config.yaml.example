@@ -1,0 +1,6 @@
+database:
+  host: your_ip
+  port: port
+  user: xxx
+  password: xxx
+  name: db_name
