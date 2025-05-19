@@ -24,7 +24,7 @@
 package main
 
 import (
-	"bubble/dao"
+	"bubble/db"
 	"bubble/routers"
 )
 
@@ -363,7 +363,7 @@ model层通过dao层声明的gorm指针对底层数据库进行操作
 package models
 
 import (
-	"bubble/dao"
+	"bubble/db"
 )
 
 // Todo Model
