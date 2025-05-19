@@ -2,6 +2,7 @@ package controller
 
 import (
 	"bubble/models"
+	"bubble/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -47,7 +48,7 @@ func CreateTodo(c *gin.Context) {
 		return
 	}
 	// 2. 存入数据库
-	if err := models.CreateATodo(&todo); err != nil {
+	if err := services.CreateATodo(&todo); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
 		// 直接返回结构体todo，返回的格式与定义的结构体格式一致
@@ -72,7 +73,7 @@ func CreateTodo(c *gin.Context) {
 //	@Router			/todo [get]
 func GetTodoList(c *gin.Context) {
 	// 查询todo这个表里的所有数据
-	todoList, err := models.GetAllTodo()
+	todoList, err := services.GetAllTodo()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
@@ -103,13 +104,13 @@ func UpdateATodo(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
 		return
 	}
-	todo, err := models.GetATodo(id)
+	todo, err := services.GetATodo(id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 		return
 	}
 	c.BindJSON(&todo)
-	if err = models.UpdateATodo(todo); err != nil {
+	if err = services.UpdateATodo(todo); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
 		//c.JSON(http.StatusOK, todo)
@@ -138,7 +139,7 @@ func DeleteATodo(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
 		return
 	}
-	if err := models.DeleteATodo(id); err != nil {
+	if err := services.DeleteATodo(id); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
 		//c.JSON(http.StatusOK, gin.H{id: "deleted"})
