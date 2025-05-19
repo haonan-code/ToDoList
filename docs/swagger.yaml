@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   models.ErrorResponse:
     properties:
@@ -23,11 +22,12 @@ definitions:
       status:
         type: integer
     type: object
-host: localhost:8080
 info:
-  contact: {}
-  description: 一个简单的 Swagger 示例
-  title: 示例 API 文档
+  contact:
+    email: nanguatou10@gmail
+    name: huang
+  description: 这是详细介绍待办事项的 API 文档
+  title: 待办事项 API 文档
   version: "1.0"
 paths:
   /ping:

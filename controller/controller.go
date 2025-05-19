@@ -22,12 +22,12 @@ func IndexHandler(c *gin.Context) {
 }
 
 // Ping godoc
-// @Summary 测试接口
-// @Description 返回 pong
-// @Tags 示例
-// @Produce json
-// @Success 200 {object} map[string]string
-// @Router /ping [get]
+//	@Summary		测试接口
+//	@Description	返回 pong
+//	@Tags			示例
+//	@Produce		json
+//	@Success		200	{object}	map[string]string
+//	@Router			/ping [get]
 func Ping(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "pong",
@@ -35,15 +35,15 @@ func Ping(c *gin.Context) {
 }
 
 // CreateTodo 创建一个新的待办事项
-// @Summary 创建待办事项
-// @Description 接收前端传来的 JSON，创建一个 Todo 项目
-// @Tags Todo
-// @Accept json
-// @Produce json
-// @Param todo body models.Todo true "待办事项内容"
-// @Success 200 {object} models.TodoResponse "创建成功返回的结构体"
-// @Failure 400 {object} models.ErrorResponse "请求参数错误"
-// @Router /todo [post]
+//	@Summary		创建待办事项
+//	@Description	接收前端传来的 JSON，创建一个 Todo 项目
+//	@Tags			Todo
+//	@Accept			json
+//	@Produce		json
+//	@Param			todo	body		models.Todo				true	"待办事项内容"
+//	@Success		200		{object}	models.TodoResponse		"创建成功返回的结构体"
+//	@Failure		400		{object}	models.ErrorResponse	"请求参数错误"
+//	@Router			/todo [post]
 func CreateTodo(c *gin.Context) {
 	// 前端页面填写待办事项 点击请求 会发请求到这里
 	// 1. 从请求中把数据拿出来
@@ -69,13 +69,13 @@ func CreateTodo(c *gin.Context) {
 }
 
 // GetTodoList 查询所有待办事项
-// @Summary 查询所有待办事项
-// @Description 返回给前端所有的 Todo 项目
-// @Tags Todo
-// @Produce json
-// @Success 200 {object} models.TodoResponse "返回所有待办事项"
-// @Failure 400 {object} models.ErrorResponse "请求参数错误"
-// @Router /todo [get]
+//	@Summary		查询所有待办事项
+//	@Description	返回给前端所有的 Todo 项目
+//	@Tags			Todo
+//	@Produce		json
+//	@Success		200	{object}	models.TodoResponse		"返回所有待办事项"
+//	@Failure		400	{object}	models.ErrorResponse	"请求参数错误"
+//	@Router			/todo [get]
 func GetTodoList(c *gin.Context) {
 	// 查询todo这个表里的所有数据
 	todoList, err := models.GetAllTodo()
@@ -92,16 +92,16 @@ func GetTodoList(c *gin.Context) {
 }
 
 // UpdateATodo 修改一个待办事项
-// @Summary 修改待办事项
-// @Description 根据 ID 更新待办事项的内容
-// @Tags Todo
-// @Accept json
-// @Produce json
-// @Param id path int true "待办事项id"
-// @Param todo body models.Todo true "待办事项内容"
-// @Success 200 {object} models.TodoResponse "修改成功返回的结构体"
-// @Failure 400 {object} models.ErrorResponse "请求参数错误"
-// @Router /todo/{id} [put]
+//	@Summary		修改待办事项
+//	@Description	根据 ID 更新待办事项的内容
+//	@Tags			Todo
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int						true	"待办事项id"
+//	@Param			todo	body		models.Todo				true	"待办事项内容"
+//	@Success		200		{object}	models.TodoResponse		"修改成功返回的结构体"
+//	@Failure		400		{object}	models.ErrorResponse	"请求参数错误"
+//	@Router			/todo/{id} [put]
 func UpdateATodo(c *gin.Context) {
 	id, ok := c.Params.Get("id")
 	if !ok {
@@ -127,15 +127,15 @@ func UpdateATodo(c *gin.Context) {
 }
 
 // DeleteATodo 删除一个待办事项
-// @Summary 删除待办事项
-// @Description 根据 ID 删除待办事项
-// @Tags Todo
-// @Accept json
-// @Produce json
-// @Param id path int true "待办事项id"
-// @Success 200 {object} models.TodoResponse "删除成功返回的结构体"
-// @Failure 400 {object} models.ErrorResponse "请求参数错误"
-// @Router /todo/{id} [delete]
+//	@Summary		删除待办事项
+//	@Description	根据 ID 删除待办事项
+//	@Tags			Todo
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int						true	"待办事项id"
+//	@Success		200	{object}	models.TodoResponse		"删除成功返回的结构体"
+//	@Failure		400	{object}	models.ErrorResponse	"请求参数错误"
+//	@Router			/todo/{id} [delete]
 func DeleteATodo(c *gin.Context) {
 	id, ok := c.Params.Get("id")
 	if !ok {
