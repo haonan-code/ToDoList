@@ -9,16 +9,41 @@
 
 项目目录结构如下：
 
-![image.png](image.png)
+```bash
+│  .gitignore 
+│  go.mod
+│  go.sum
+│  main.go
+│  README.md
+│  settings.env
+│  settings.env.example
+├─config
+│      config.go
+├─controller 			# 控制器，处理路由请求，调用model层对数据进行操作
+│      controller.go
+├─db					# 数据库底层操作
+│      init.go
+│      schema.sql		# 数据库脚本文件
+├─docs					# swagger 文档
+│      docs.go
+│      swagger.json
+│      swagger.yaml
+├─models				# 业务逻辑，增删改查，通过gorm操作底层数据库连接
+│      todo.go
+├─routers				# 定义路由
+│      routers.go
+├─static
+│  ├─css
+│  ├─fonts
+│  └─js
+└─templates
+```
 
-- controller：控制器，处理路由请求，调用model层对数据进行操作
-- dao：数据库底层操作
-- models：业务逻辑，增删改查，通过gorm操作底层数据库连接
-- routers：定义路由
+
 
 ## 二、具体流程
 
-项目从主目录下的main.go文件进入，主要代码如下：
+项目从主目录下的`main.go`文件进入，主要代码如下：
 
 ```go
 package main
@@ -357,55 +382,5 @@ model层通过dao层声明的gorm指针对底层数据库进行操作
     ```
 
 
-所有代码：
 
-```go
-package models
 
-import (
-	"bubble/db"
-)
-
-// Todo Model
-type Todo struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	status bool   `json:"status"`
-}
-
-/*
-	Todo这个Model的增删改查操作都放在这里
-*/
-// CreateATodo 创建todo
-func CreateATodo(todo *Todo) (err error) {
-	err = dao.DB.Create(&todo).Error
-	return
-}
-
-func GetAllTodo() (todoList []*Todo, err error) {
-
-	if err = dao.DB.Find(&todoList).Error; err != nil {
-		return nil, err
-	}
-	return
-
-}
-
-func GetATodo(id string) (todo *Todo, err error) {
-	todo = new(Todo)
-	if err = dao.DB.Where("id=?", id).First(todo).Error; err != nil {
-		return nil, err
-	}
-	return
-}
-
-func UpdateATodo(todo *Todo) (err error) {
-	err = dao.DB.Save(todo).Error
-	return
-}
-
-func DeleteATodo(id string) (err error) {
-	err = dao.DB.Where("id=?", id).Delete(&Todo{}).Error
-	return
-}
-```

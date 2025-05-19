@@ -6,21 +6,19 @@ import (
 	"bubble/routers"
 )
 
-//	@title			待办事项 API 文档
-//	@version		1.0
-//	@description	这是详细介绍待办事项的 API 文档
+// @title			待办事项 API 文档
+// @version		1.0
+// @description	这是详细介绍待办事项的 API 文档
 //
-//	@contact.name	huang
-//	@contact.email	nanguatou10@gmail
+// @contact.name	huang
+// @contact.email	nanguatou10@gmail
 func main() {
-	// 创建数据库
-	// sql: CREATE DATABASE bubble;
-	// 连接数据库 & 模型绑定
+	// 初始化数据库
 	err := db.InitMySQL()
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close() // 程序退出关闭数据库连接
+	defer db.Close()
 	// 注册路由
 	r := routers.SetupRouter()
 	r.Run(":9090")
