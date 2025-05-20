@@ -19,6 +19,24 @@ func SetupRouter() *gin.Engine {
 	r.GET("/", controller.IndexHandler)
 	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	userGroup := r.Group("/user")
+	{
+		userGroup.POST("/register", controller.Register)       // 用户注册
+		userGroup.POST("/login", controller.Login)             // 用户登录
+		userGroup.POST("/logout", controller.Logout)           // 用户登出
+		userGroup.GET("/me", controller.GetMyInfo)             // 获取当前用户
+		userGroup.PUT("/me", controller.UpdateUserInfo)        // 更新当前用户信息
+		userGroup.PUT("/changepwd", controller.ChangePassword) //  修改密码
+	}
+
+	// TODO：添加用户管理模块
+	//adminGroup := r.Group("/admin")
+	//{
+	//	adminGroup.GET("/users", controller.GetUserList)       // 查询所有用户（管理端）
+	//	adminGroup.GET("/users/:id", controller.GetUserInfo)   // 查看单个用户信息（管理端）
+	//	adminGroup.DELETE("/users/:id", controller.DeleteUser) // 删除用户（管理员权限）
+	//}
+
 	v1Group := r.Group("v1")
 	{
 		v1Group.GET("/ping", controller.Ping)

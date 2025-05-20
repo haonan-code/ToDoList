@@ -3,6 +3,7 @@ package controller
 import (
 	"bubble/models"
 	"bubble/services"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -27,6 +28,111 @@ func Ping(c *gin.Context) {
 	})
 }
 
+// Register 用户注册
+//
+//	@Summary		注册一个新用户
+//	@Description	接收前端传来的 JSON 用户信息，创建一个新用户
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.user				true	"注册用户信息"
+//	@Success		200		{object}	map[string]interface{}	"创建成功返回的结构体"
+//	@Failure		400		{object}	map[string]interface{}	"请求参数错误"
+//	@Router			/register [post]
+func Register(c *gin.Context) {
+	var user models.User
+	if err := c.ShouldBind(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := services.CreateAUser(&user); err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"status": 200,
+			"msg":    "success",
+			"data":   user,
+		})
+	}
+}
+
+// Login 用户登录
+//
+//	@Summary      用户登录
+//	@Description   接收用户凭据，验证并返回 JWT 令牌
+//	@Tags        Auth
+//	@Accept          json
+//	@Produce      json
+//	@Param       user   body      models.LoginRequest    true   "用户登录凭据"
+//	@Success      200       {object}   models.AuthResponse       "登录成功"
+//	@Failure      400       {object}   map[string]interface{}   "请求参数错误"
+//	@Failure      401       {object}   map[string]interface{}   "用户名或密码错误"
+//	@Failure      500       {object}   map[string]interface{}   "服务器内部错误"
+//	@Router          /login [post]
+func Login(c *gin.Context) {
+	var req models.LoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": 400,
+			"msg":    "请求参数格式错误或不完整",
+			"error":  err.Error(),
+		})
+		return
+	}
+	// 1. 验证用户凭据
+	user, err := services.AuthenticateUser(req.Username, req.Password)
+	if err != nil {
+		statusCode := http.StatusInternalServerError
+		msg := "服务器内部错误"
+		if errors.Is(err, services.ErrInvalidCredentials) || errors.Is(err, services.ErrUserNotFound) {
+			statusCode = http.StatusUnauthorized // 401 Unauthorized
+			msg = "用户名或密码错误"
+		}
+		c.JSON(statusCode, gin.H{
+			"status": statusCode,
+			"msg":    msg,
+			"error":  err.Error(),
+		})
+		return
+	}
+	// 2. 生成 JWT 令牌
+	token, err := services.GenerateToken(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    "生成认证令牌失败",
+			"error":  err.Error(),
+		})
+		return
+	}
+	// 3. 返回成功响应
+	c.JSON(http.StatusOK, models.AuthResponse{
+		Status: 200,
+		Msg:    "登录成功",
+		Data: models.LoginResponseData{
+			Token:    token,
+			Username: user.Username,
+			UserID:   user.ID,
+		},
+	})
+}
+
+func Logout(c *gin.Context) {
+	// TODO
+}
+
+func GetMyInfo(c *gin.Context) {
+	// TODO
+}
+
+func UpdateUserInfo(c *gin.Context) {
+	// TODO
+}
+
+func ChangePassword(c *gin.Context) {
+	// TODO
+}
+
 // CreateTodo 创建一个新的待办事项
 //
 //	@Summary		创建待办事项
@@ -35,19 +141,15 @@ func Ping(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			todo	body		models.Todo				true	"待办事项内容"
-//	@Success		200		{object}	models.TodoResponse		"创建成功返回的结构体"
-//	@Failure		400		{object}	models.ErrorResponse	"请求参数错误"
+//	@Success		200		{object}	map[string]interface{}		"创建成功返回的结构体"
+//	@Failure		400		{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo [post]
 func CreateTodo(c *gin.Context) {
-	// 前端页面填写待办事项 点击请求 会发请求到这里
-	// 1. 从请求中把数据拿出来
 	var todo models.Todo
-	// BindJSON()用于从请求中获取JSON数据并将其绑定到指定的Go结构体变量&todo上
 	if err := c.ShouldBind(&todo); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// 2. 存入数据库
 	if err := services.CreateATodo(&todo); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
@@ -68,8 +170,8 @@ func CreateTodo(c *gin.Context) {
 //	@Description	返回给前端所有的 Todo 项目
 //	@Tags			Todo
 //	@Produce		json
-//	@Success		200	{object}	models.TodoResponse		"返回所有待办事项"
-//	@Failure		400	{object}	models.ErrorResponse	"请求参数错误"
+//	@Success		200	{object}	map[string]interface{}	"返回所有待办事项"
+//	@Failure		400	{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo [get]
 func GetTodoList(c *gin.Context) {
 	// 查询todo这个表里的所有数据
@@ -95,31 +197,55 @@ func GetTodoList(c *gin.Context) {
 //	@Produce		json
 //	@Param			id		path		int						true	"待办事项id"
 //	@Param			todo	body		models.Todo				true	"待办事项内容"
-//	@Success		200		{object}	models.TodoResponse		"修改成功返回的结构体"
-//	@Failure		400		{object}	models.ErrorResponse	"请求参数错误"
+//	@Success		200		{object}	map[string]interface{}		"修改成功返回的结构体"
+//	@Failure		400		{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo/{id} [put]
 func UpdateATodo(c *gin.Context) {
+	//id, ok := c.Params.Get("id")
+	//if !ok {
+	//	c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
+	//	return
+	//}
+	//todo, err := services.GetATodo(id)
+	//if err != nil {
+	//	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	//	return
+	//}
+	//if err = c.BindJSON(&todo); err != nil {
+	//	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	//	return
+	//}
+	//if err = services.UpdateATodo(todo); err != nil {
+	//	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	//} else {
+	//	//c.JSON(http.StatusOK, todo)
+	//	c.JSON(http.StatusOK, gin.H{
+	//		"status": 200,
+	//		"msg":    "success",
+	//		"data":   todo,
+	//	})
+	//}
 	id, ok := c.Params.Get("id")
 	if !ok {
 		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
 		return
 	}
-	todo, err := services.GetATodo(id)
-	if err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
+	var input models.UpdateTodoInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.BindJSON(&todo)
-	if err = services.UpdateATodo(todo); err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-	} else {
-		//c.JSON(http.StatusOK, todo)
-		c.JSON(http.StatusOK, gin.H{
-			"status": 200,
-			"msg":    "success",
-			"data":   todo,
-		})
+	todo, err := services.UpdateTodo(id, &input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "success",
+		"data":   todo,
+	})
+
 }
 
 // DeleteATodo 删除一个待办事项
@@ -130,8 +256,8 @@ func UpdateATodo(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int						true	"待办事项id"
-//	@Success		200	{object}	models.TodoResponse		"删除成功返回的结构体"
-//	@Failure		400	{object}	models.ErrorResponse	"请求参数错误"
+//	@Success		200	{object}	map[string]interface{}		"删除成功返回的结构体"
+//	@Failure		400	{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo/{id} [delete]
 func DeleteATodo(c *gin.Context) {
 	id, ok := c.Params.Get("id")
