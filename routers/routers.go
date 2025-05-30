@@ -19,7 +19,8 @@ func SetupRouter() *gin.Engine {
 	r.GET("/", controller.IndexHandler)
 	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	userGroup := r.Group("/user")
+	// 注册认证相关的路由
+	userGroup := r.Group("/auth")
 	{
 		userGroup.POST("/register", controller.Register)       // 用户注册
 		userGroup.POST("/login", controller.Login)             // 用户登录
@@ -37,6 +38,7 @@ func SetupRouter() *gin.Engine {
 	//	adminGroup.DELETE("/users/:id", controller.DeleteUser) // 删除用户（管理员权限）
 	//}
 
+	// 注册todo相关的路由
 	v1Group := r.Group("v1")
 	{
 		v1Group.GET("/ping", controller.Ping)

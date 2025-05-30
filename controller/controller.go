@@ -4,8 +4,11 @@ import (
 	"bubble/models"
 	"bubble/services"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 func IndexHandler(c *gin.Context) {
@@ -40,20 +43,75 @@ func Ping(c *gin.Context) {
 //	@Failure		400		{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/register [post]
 func Register(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var req models.UserRegisterRequest
+	// ShouldBindJSON 确保只解析 JSON 请求体，并根据 binding tag 验证
+	if err := c.ShouldBindJSON(&req); err != nil {
+		// 处理 Gin 的 binding 错误，可以更友好的返回验证失败信息
+		errs, ok := err.(validator.ValidationErrors)
+		if ok {
+			// 如果是 validator 验证错误，可以循环遍历并返回详细信息
+			var errorMsgs []string
+			for _, e := range errs {
+				errorMsgs = append(errorMsgs, e.Field()+" 字段验证失败: "+e.Tag())
+			}
+			c.JSON(http.StatusBadRequest, models.CommonResponse{
+				Status: http.StatusBadRequest,
+				Msg:    "请求参数验证失败",
+				Error:  strings.Join(errorMsgs, "; "), // 或者拼接 errorMsgs
+			})
+		} else {
+			// 其他类型的 binding 错误，例如 JSON 格式错误
+			c.JSON(http.StatusBadRequest, models.CommonResponse{
+				Status: http.StatusBadRequest,
+				Msg:    "请求参数格式错误或不完整",
+				Error:  err.Error(),
+			})
+		}
 		return
 	}
-	if err := services.CreateAUser(&user); err != nil {
-		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
-	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"status": 200,
-			"msg":    "success",
-			"data":   user,
-		})
+	// 调用服务层创建用户
+	user, err := services.CreateUser(&req)
+	if err != nil {
+		// 根据服务层返回的错误类型，设置不同的HTTP状态码和消息
+		switch {
+		case errors.Is(err, services.ErrUsernameExists):
+			c.JSON(http.StatusConflict, models.CommonResponse{ // 409 Conflict
+				Status: http.StatusConflict,
+				Msg:    "用户名已存在",
+				Error:  err.Error(),
+			})
+		case errors.Is(err, services.ErrEmailExists):
+			c.JSON(http.StatusConflict, models.CommonResponse{ // 409 Conflict
+				Status: http.StatusConflict,
+				Msg:    "邮箱已注册",
+				Error:  err.Error(),
+			})
+		case errors.Is(err, services.ErrPasswordHash), errors.Is(err, services.ErrUserCreate):
+			c.JSON(http.StatusInternalServerError, models.CommonResponse{ // 500 Internal Server Error
+				Status: http.StatusInternalServerError,
+				Msg:    "服务器内部错误，用户创建失败",
+				Error:  err.Error(),
+			})
+		default:
+			c.JSON(http.StatusInternalServerError, models.CommonResponse{ // 500 Internal Server Error
+				Status: http.StatusInternalServerError,
+				Msg:    "未知错误",
+				Error:  err.Error(),
+			})
+		}
+		return
 	}
+
+	// 注册成功，返回 201 Created
+	c.JSON(http.StatusCreated, models.CommonResponse{
+		Status: http.StatusCreated,
+		Msg:    "注册成功",
+		Data: models.UserRegisterResponseData{
+			UserID:   user.ID,
+			Username: user.Username,
+			Email:    user.Email,
+		},
+	})
 }
 
 // Login 用户登录
