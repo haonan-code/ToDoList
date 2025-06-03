@@ -5,6 +5,7 @@ import (
 	"bubble/models"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // 定义一些业务错误
@@ -40,4 +41,30 @@ func CreateUser(userReq *models.UserRegisterRequest) (*models.User, error) {
 		return nil, ErrUserCreate
 	}
 	return newUser, nil
+}
+
+// GetMyInfo 查询当前用户的信息
+func GetMyInfo(userID uint) (*models.User, error) {
+	user, err := db.GetUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func UpdateUserInfo(id string, input *models.UpdateUserInfo) (models.User, error) {
+	var user models.User
+	if err := db.DB.First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return user, errors.New("用户未找到")
+		}
+		// 其他查询错误（连接、权限等）
+		return user, err
+	}
+
+	// 使用结构体 Updates：只更新非 nil 字段
+	if err := db.DB.Model(&user).Updates(input).Error; err != nil {
+		return user, err
+	}
+	return user, nil
 }

@@ -17,6 +17,12 @@ type UserRegisterRequest struct {
 	Email    string `json:"email" binding:"required,email"`           // 必填，邮箱格式
 }
 
+// 用于用户更新个人信息（可选字段）
+type UpdateUserInfo struct {
+	Username *string `json:"title,omitempty"`
+	Email    *string `json:"title,omitempty"`
+}
+
 // UserRegisterResponseData 用于注册成功响应的数据部分
 type UserRegisterResponseData struct {
 	UserID   uint   `json:"user_id"`

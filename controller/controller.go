@@ -175,16 +175,53 @@ func Login(c *gin.Context) {
 	})
 }
 
-func Logout(c *gin.Context) {
-	// TODO
-}
-
 func GetMyInfo(c *gin.Context) {
-	// TODO
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	user, err := services.GetMyInfo(userID.(uint))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status": 500,
+			"msg":    "获取用户信息失败",
+			"error":  err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, models.CommonResponse{
+		Status: 200,
+		Msg:    "获取我的信息成功",
+		Data: models.MyInfoResponseData{
+			ID:       user.ID,
+			Username: user.Username,
+			Email:    user.Email,
+		},
+	})
 }
 
 func UpdateUserInfo(c *gin.Context) {
-	// TODO
+	id, ok := c.Params.Get("id")
+	if !ok {
+		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
+		return
+	}
+	var input models.UpdateUserInfo
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := services.UpdateUserInfo(id, &input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "success",
+		"data":   user,
+	})
 }
 
 func ChangePassword(c *gin.Context) {

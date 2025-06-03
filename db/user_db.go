@@ -39,3 +39,27 @@ func CreateUser(user *models.User) error {
 	log.Printf("成功创建用户: %s", user.Username)
 	return nil
 }
+
+func GetUserByUsername(username string) (*models.User, error) {
+	var user models.User
+	err := DB.Where("username = ?", username).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("用户 %s 不存在", username)
+		}
+		return nil, fmt.Errorf("查询用户失败: %w", err)
+	}
+	return &user, nil
+}
+
+func GetUserByID(userID uint) (*models.User, error) {
+	var user models.User
+	err := DB.First(&user, userID).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("用户 ID %d 不存在", userID)
+		}
+		return nil, fmt.Errorf("查询用户失败: %w", err)
+	}
+	return &user, nil
+}

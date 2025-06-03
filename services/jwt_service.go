@@ -1,14 +1,12 @@
 package services
 
 import (
+	"bubble/config"
 	"bubble/models"
 	"errors"
-	"golang.org/x/oauth2/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"time"
 )
-
-// 定义JWT密钥，生产环境请使用更安全的配置方式 (如环境变量)
-var jwtSecret = []byte("your_super_secret_jwt_key")
 
 // Claims 定义 JWT 的有效载荷
 type Claims struct {
@@ -26,13 +24,13 @@ func GenerateToken(user *models.User) (string, error) {
 		Username: user.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime), // 过期时间
-			IssuedAt:  jwt.NewNumericDate(time.Now()),      // 签发时间
-			Issuer: "your-api-issuer", // 签发者
-			Subject: user.Username,     // 主题
-		}
+			IssuedAt:  jwt.NewNumericDate(time.Now()),     // 签发时间
+			Issuer:    "localhost",                        // 签发者
+			Subject:   user.Username,                      // 主题
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtSecret)
+	tokenString, err := token.SignedString(config.JwtSecret)
 	if err != nil {
 		return "", ErrGenerateTokenFailed
 	}
@@ -43,7 +41,7 @@ func GenerateToken(user *models.User) (string, error) {
 func ParseToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtSecret, nil
+		return config.JwtSecret, nil
 	})
 	if err != nil {
 		if errors.Is(err, jwt.ErrSignatureInvalid) {

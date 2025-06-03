@@ -24,7 +24,6 @@ func SetupRouter() *gin.Engine {
 	{
 		userGroup.POST("/register", controller.Register)       // 用户注册
 		userGroup.POST("/login", controller.Login)             // 用户登录
-		userGroup.POST("/logout", controller.Logout)           // 用户登出
 		userGroup.GET("/me", controller.GetMyInfo)             // 获取当前用户
 		userGroup.PUT("/me", controller.UpdateUserInfo)        // 更新当前用户信息
 		userGroup.PUT("/changepwd", controller.ChangePassword) //  修改密码
