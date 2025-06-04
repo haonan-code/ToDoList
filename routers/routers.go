@@ -2,6 +2,7 @@ package routers
 
 import (
 	"bubble/controller"
+	"bubble/middleware"
 
 	"github.com/gin-gonic/gin"
 	"github.com/swaggo/files"
@@ -19,14 +20,21 @@ func SetupRouter() *gin.Engine {
 	r.GET("/", controller.IndexHandler)
 	r.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// 注册认证相关的路由
+	// 注册用户管理相关的路由
 	userGroup := r.Group("/auth")
 	{
-		userGroup.POST("/register", controller.Register)       // 用户注册
-		userGroup.POST("/login", controller.Login)             // 用户登录
-		userGroup.GET("/me", controller.GetMyInfo)             // 获取当前用户
-		userGroup.PUT("/me", controller.UpdateUserInfo)        // 更新当前用户信息
-		userGroup.PUT("/changepwd", controller.ChangePassword) //  修改密码
+		// 公共接口（无需认证）
+		userGroup.POST("/register", controller.Register) // 用户注册
+		userGroup.POST("/login", controller.Login)       // 用户登录
+
+		// 需要认证的接口
+		authRequired := userGroup.Group("")
+		authRequired.Use(middleware.JWTAuthMiddleware())
+		{
+			authRequired.GET("/me", controller.GetMyInfo)             // 获取当前用户
+			authRequired.PUT("/me", controller.UpdateUserInfo)        // 更新当前用户信息
+			authRequired.PUT("/changepwd", controller.ChangePassword) //  修改密码
+		}
 	}
 
 	// TODO：添加用户管理模块

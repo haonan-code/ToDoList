@@ -18,9 +18,3 @@ type AuthResponse struct {
 	Msg    string            `json:"msg"`
 	Data   LoginResponseData `json:"data"`
 }
-
-type MyInfoResponseData struct {
-	ID       uint   `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}

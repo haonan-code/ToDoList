@@ -19,8 +19,14 @@ type UserRegisterRequest struct {
 
 // 用于用户更新个人信息（可选字段）
 type UpdateUserInfo struct {
-	Username *string `json:"title,omitempty"`
-	Email    *string `json:"title,omitempty"`
+	Username *string `json:"username,omitempty"`
+	Email    *string `json:"email,omitempty"`
+}
+
+type ChangePassword struct {
+	OldPassword     string `json:"old_password" binding:"required"`     // 必填，旧密码
+	NewPassword     string `json:"new_password" binding:"required"`     // 新密码
+	ConfirmPassword string `json:"confirm_password" binding:"required"` // 新密码确认（可选，视是否后端校验）
 }
 
 // UserRegisterResponseData 用于注册成功响应的数据部分
@@ -36,4 +42,10 @@ type CommonResponse struct {
 	Msg    string      `json:"msg"`
 	Data   interface{} `json:"data,omitempty"`  // Data 字段可选，omitempty表示如果为空则不序列化
 	Error  string      `json:"error,omitempty"` // 错误信息
+}
+
+type MyInfoResponseData struct {
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
 }

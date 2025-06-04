@@ -1,8 +1,9 @@
-package services
+package utils
 
 import (
 	"bubble/config"
 	"bubble/models"
+	"bubble/services"
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
 	"time"
@@ -32,7 +33,7 @@ func GenerateToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(config.JwtSecret)
 	if err != nil {
-		return "", ErrGenerateTokenFailed
+		return "", services.ErrGenerateTokenFailed
 	}
 	return tokenString, nil
 }

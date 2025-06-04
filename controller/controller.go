@@ -3,6 +3,7 @@ package controller
 import (
 	"bubble/models"
 	"bubble/services"
+	"bubble/utils"
 	"errors"
 	"net/http"
 	"strings"
@@ -154,7 +155,7 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 2. 生成 JWT 令牌
-	token, err := services.GenerateToken(user)
+	token, err := utils.GenerateToken(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status": 500,
@@ -202,9 +203,9 @@ func GetMyInfo(c *gin.Context) {
 }
 
 func UpdateUserInfo(c *gin.Context) {
-	id, ok := c.Params.Get("id")
-	if !ok {
-		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 	var input models.UpdateUserInfo
@@ -212,20 +213,45 @@ func UpdateUserInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := services.UpdateUserInfo(id, &input)
+	err := services.UpdateUserInfo(userID.(uint), &input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": 200,
-		"msg":    "success",
-		"data":   user,
+		"msg":    "用户信息修改成功",
 	})
 }
 
 func ChangePassword(c *gin.Context) {
-	// TODO
+	// 1. 解析请求体中的新旧密码
+	var input models.ChangePassword
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请求参数不正确"})
+		return
+	}
+	// 2. 验证新密码和确认密码是否一致
+	if input.NewPassword != input.ConfirmPassword {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "两次新密码输入不一致"})
+		return
+	}
+	// 3. 获取 JWT 中的 id 信息
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	// 4. 调用服务层方法更改密码
+	err := services.ChangePassword(userID.(uint), &input)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"status": 200,
+		"msg":    "密码修改成功",
+	})
 }
 
 // CreateTodo 创建一个新的待办事项
