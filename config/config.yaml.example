@@ -4,3 +4,7 @@ database:
   user: xxx
   password: xxx
   name: db_name
+
+jwt:
+  secret: "your-jwt-secret"
+  expires: 24 # token 有效期（单位：小时，可选）

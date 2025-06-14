@@ -2,7 +2,10 @@ package db
 
 import (
 	"bubble/config"
+	"bubble/models"
 	"fmt"
+	"log"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -25,5 +28,11 @@ func InitDatabase() {
 		panic(fmt.Errorf("数据库连接失败: %w", err))
 	}
 
-	fmt.Println("✅ 数据库连接成功")
+	log.Println("✅ 数据库连接成功")
+
+	err = DB.AutoMigrate(&models.User{}, &models.Todo{})
+	if err != nil {
+		return
+	}
+
 }
