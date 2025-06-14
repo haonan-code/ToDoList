@@ -8,6 +8,7 @@ type User struct {
 	Email    string `json:"email" gorm:"unique;not null"`
 	// CreatedAt time.Time `json:"created_at"` // 可选：记录创建时间
 	// UpdatedAt time.Time `json:"updated_at"` // 可选：记录更新时间
+	Todos []Todo `gorm:"foreignKey:UserID"`
 }
 
 // UserRegisterRequest 定义用户注册请求体
