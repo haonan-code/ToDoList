@@ -5,8 +5,8 @@ import (
 	"bubble/middleware"
 
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func SetupRouter() *gin.Engine {
@@ -37,7 +37,7 @@ func SetupRouter() *gin.Engine {
 		}
 	}
 
-	// TODO：添加用户管理模块
+	// TODO 添加用户管理模块
 	//adminGroup := r.Group("/admin")
 	//{
 	//	adminGroup.GET("/users", controller.GetUserList)       // 查询所有用户（管理端）
@@ -45,14 +45,14 @@ func SetupRouter() *gin.Engine {
 	//	adminGroup.DELETE("/users/:id", controller.DeleteUser) // 删除用户（管理员权限）
 	//}
 
-	// 注册todo相关的路由
+	// 注册待办事项相关的路由
 	v1Group := r.Group("v1")
+	v1Group.Use(middleware.JWTAuthMiddleware()) // 添加JWT认证中间件
 	{
-		v1Group.GET("/ping", controller.Ping)
 		v1Group.POST("/todo", controller.CreateTodo)
 		v1Group.GET("/todo", controller.GetTodoList)
-		v1Group.PUT("/todo/:id", controller.UpdateATodo)
-		v1Group.DELETE("/todo/:id", controller.DeleteATodo)
+		v1Group.PUT("/todo/", controller.UpdateATodo)
+		v1Group.DELETE("/todo/", controller.DeleteATodo)
 	}
 	return r
 }

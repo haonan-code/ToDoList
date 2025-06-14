@@ -13,14 +13,15 @@ func CreateAUser(user *models.User) (err error) {
 }
 
 // CreateATodo 创建todo
-func CreateATodo(todo *models.Todo) (err error) {
+func CreateATodo(userID uint, todo *models.Todo) (err error) {
+	todo.UserID = userID
 	err = db.DB.Create(&todo).Error
 	return
 }
 
-func GetAllTodo() (todoList []*models.Todo, err error) {
+func GetAllTodo(userID uint) (todoList []*models.Todo, err error) {
 
-	if err = db.DB.Find(&todoList).Error; err != nil {
+	if err = db.DB.Where("user_id = ?", userID).Find(&todoList).Error; err != nil {
 		return nil, err
 	}
 	return
@@ -40,11 +41,11 @@ func UpdateATodo(todo *models.Todo) (err error) {
 	return
 }
 
-func UpdateTodo(id string, input *models.UpdateTodoInput) (models.Todo, error) {
+func UpdateTodo(userID uint, input *models.UpdateTodoInput) (models.Todo, error) {
 	var todo models.Todo
-	if err := db.DB.First(&todo, id).Error; err != nil {
+	if err := db.DB.Where("user_id = ?", userID).First(&todo).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return todo, errors.New("纪录未找到")
+			return todo, errors.New("记录未找到")
 		}
 		// 其他查询错误（连接、权限等）
 		return todo, err
@@ -57,7 +58,7 @@ func UpdateTodo(id string, input *models.UpdateTodoInput) (models.Todo, error) {
 	return todo, nil
 }
 
-func DeleteATodo(id string) (err error) {
-	err = db.DB.Where("id=?", id).Delete(&models.Todo{}).Error
+func DeleteATodo(userID uint) (err error) {
+	err = db.DB.Where("user_id = ?", userID).Delete(&models.Todo{}).Error
 	return
 }
