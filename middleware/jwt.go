@@ -3,7 +3,6 @@ package middleware
 import (
 	"bubble/utils"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -25,7 +24,7 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 
 		// 放入 context, 供后续 handler 使用
 		c.Set("userID", claims.UserID)
-		log.Println("userID from token:", claims.UserID)
+		//log.Println("userID from token:", claims.UserID)
 		c.Next()
 	}
 }

@@ -41,9 +41,9 @@ func UpdateATodo(todo *models.Todo) (err error) {
 	return
 }
 
-func UpdateTodo(userID uint, input *models.UpdateTodoInput) (models.Todo, error) {
+func UpdateTodo(id string, input *models.UpdateTodoInput) (models.Todo, error) {
 	var todo models.Todo
-	if err := db.DB.Where("user_id = ?", userID).First(&todo).Error; err != nil {
+	if err := db.DB.Where("id = ?", id).First(&todo).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return todo, errors.New("记录未找到")
 		}
@@ -58,7 +58,7 @@ func UpdateTodo(userID uint, input *models.UpdateTodoInput) (models.Todo, error)
 	return todo, nil
 }
 
-func DeleteATodo(userID uint) (err error) {
-	err = db.DB.Where("user_id = ?", userID).Delete(&models.Todo{}).Error
+func DeleteATodo(id string) (err error) {
+	err = db.DB.Where("id = ?", id).Delete(&models.Todo{}).Error
 	return
 }

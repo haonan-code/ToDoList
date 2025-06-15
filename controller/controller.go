@@ -334,16 +334,16 @@ func GetTodoList(c *gin.Context) {
 //	@Failure		400		{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo/{id} [put]
 func UpdateATodo(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	_, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	//id, ok := c.Params.Get("id")
-	//if !ok {
-	//	c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
-	//	return
-	//}
+	id, ok := c.Params.Get("id")
+	if !ok {
+		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
+		return
+	}
 	//todo, err := services.GetATodo(id)
 	//if err != nil {
 	//	c.JSON(http.StatusOK, gin.H{"error": err.Error()})
@@ -373,7 +373,7 @@ func UpdateATodo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	todo, err := services.UpdateTodo(userID.(uint), &input)
+	todo, err := services.UpdateTodo(id, &input)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -398,12 +398,17 @@ func UpdateATodo(c *gin.Context) {
 //	@Failure		400	{object}	map[string]interface{}	"请求参数错误"
 //	@Router			/todo/{id} [delete]
 func DeleteATodo(c *gin.Context) {
-	userID, exists := c.Get("userID")
+	_, exists := c.Get("userID")
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
-	if err := services.DeleteATodo(userID.(uint)); err != nil {
+	id, ok := c.Params.Get("id")
+	if !ok {
+		c.JSON(http.StatusOK, gin.H{"error": "无效的id"})
+		return
+	}
+	if err := services.DeleteATodo(id); err != nil {
 		c.JSON(http.StatusOK, gin.H{"error": err.Error()})
 	} else {
 		//c.JSON(http.StatusOK, gin.H{id: "deleted"})
