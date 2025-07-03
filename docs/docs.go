@@ -56,13 +56,13 @@ const docTemplate = `{
                     "200": {
                         "description": "返回所有待办事项",
                         "schema": {
-                            "$ref": "#/definitions/models.TodoResponse"
+                            "$ref": "#/definitions/model.TodoResponse"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -86,7 +86,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Todo"
+                            "$ref": "#/definitions/model.Todo"
                         }
                     }
                 ],
@@ -94,13 +94,13 @@ const docTemplate = `{
                     "200": {
                         "description": "创建成功返回的结构体",
                         "schema": {
-                            "$ref": "#/definitions/models.TodoResponse"
+                            "$ref": "#/definitions/model.TodoResponse"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -133,7 +133,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Todo"
+                            "$ref": "#/definitions/model.Todo"
                         }
                     }
                 ],
@@ -141,13 +141,13 @@ const docTemplate = `{
                     "200": {
                         "description": "修改成功返回的结构体",
                         "schema": {
-                            "$ref": "#/definitions/models.TodoResponse"
+                            "$ref": "#/definitions/model.TodoResponse"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -177,13 +177,13 @@ const docTemplate = `{
                     "200": {
                         "description": "删除成功返回的结构体",
                         "schema": {
-                            "$ref": "#/definitions/models.TodoResponse"
+                            "$ref": "#/definitions/model.TodoResponse"
                         }
                     },
                     "400": {
                         "description": "请求参数错误",
                         "schema": {
-                            "$ref": "#/definitions/models.ErrorResponse"
+                            "$ref": "#/definitions/model.ErrorResponse"
                         }
                     }
                 }
@@ -191,7 +191,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ErrorResponse": {
+        "model.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {
@@ -199,7 +199,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Todo": {
+        "model.Todo": {
             "type": "object",
             "properties": {
                 "id": {
@@ -213,11 +213,11 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TodoResponse": {
+        "model.TodoResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/models.Todo"
+                    "$ref": "#/definitions/model.Todo"
                 },
                 "msg": {
                     "type": "string"
