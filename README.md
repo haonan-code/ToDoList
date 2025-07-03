@@ -26,7 +26,7 @@
 │      docs.go
 │      swagger.json
 │      swagger.yaml
-├─models				# 业务逻辑，增删改查，通过gorm操作底层数据库连接
+├─model				# 业务逻辑，增删改查，通过gorm操作底层数据库连接
 │      todo.go
 ├─routers				# 定义路由
 │      routers.go
